@@ -1,4 +1,5 @@
-
+#!python3 env
+#@author hossainel
 class Matrix:
     MArr = [[]]
     def __init__(self, M=[[]]):
@@ -18,6 +19,7 @@ For an Identity Matirx
             k = M.split(' ')
             if k[0].upper()=='I': self.__I(int(k[1]))
             if k[0].upper()=='Z': self.__Zero(int(k[1]),int(k[2]))
+            if k[0].upper()=='C': self.cramer(k)
         else: self.MArr = M
         
     def pMatrix(self):
@@ -29,7 +31,7 @@ Prints the matrix and returns None
         for i in self.MArr:
             t=t+"|\t"
             for j in i[:-1]:
-                t=t+str(round(j,3))+"\t"
+                t=t+str(j)+"\t"
             t=t+str(i[-1])+"\t|\n\n"
         self.sMArr = t
         print(t)
@@ -289,5 +291,36 @@ Returns a determinant in of Matrix A
                     if i<r: de[j] = de[j] * d[i][i+j]
                     if i+1>=r: de[i+1] = de[i+1] * d[j][i-c-j]
             return sum(de[:r])-sum(de[r:])
+        
+    def cramer(self,arr):
+        '''
+Solving cramer problem with Matrix A
+>>> A = Matrix("C 1x+2y+-1z=5 3x+-1y+3z=7 2x+3y+1z=11")
+>>> A.pMatrix()
+        '''
+        l = len(arr)
+        arr = arr[:]
+        if l<2: return None
+        else:
+            dr = []
+            for i in arr[1:]:
+                dc = []
+                e = i.split("=")[0]
+                for j in e.split("+"):
+                    dc.append(j[-1])
+                dc.append('k')
+                dr.append(dc)
+                break
+            for i in arr[1:]:
+                e,d= i.split("=")
+                dc = []
+                for j in e.split("+"):
+                    dc.append(float(j[:-1]))
+                dc.append(float(d))
+                dr.append(dc)
+            k = self.determinant(self.confector(dr[:], 0,-1))
+            self.MArr = []
+            for i in range(l-1):
+                self.MArr.append([dr[0][i],self.determinant(self.confector(dr[:], 0,i))/k])
 
 
