@@ -96,9 +96,7 @@ Returns the matrix type in a list.
         '''
         if self.__mType=="Square":
             tmp = [self.__mType]
-            uT = True
-            lT = True
-            slr = True
+            uT = lT = slr = True
             for i in range(self.row):
                 for j in range(self.col):
                     if (not self.MArr[i][j]==0):
@@ -117,8 +115,7 @@ Returns the matrix type in a list.
             self.transpose
             if self.__mMul==self.MArr: tmp.append("Idempotent")
             if self.__mMul==[[0 for i in range(self.col)] for j in range(self.row)]: tmp.append("Nilpotent")
-            uT = True
-            slr = True
+            uT = slr = True
             for i in range(self.row):
                 for j in range(self.col):
                     if (not self.__mMul[i][j]==0) and (not i==j) : uT = False
@@ -227,14 +224,13 @@ You can multiply a matrix twice like A2 = A * A
 You can multiply a matrix twice like A3 = A * A * A
 >>> A3 = A.mMul().mMul()
         '''
-        tmp = []
+        
         if M==[[]]:
             class M:
                 MArr = self.MArr
                 col = self.col
                 row = self.row
-        for i in range(self.row):
-            tmp.append([0 for i in range(M.col)])
+        tmp = [[0 for i in range(M.col)] for j in range(self.row)]
         if self.col==M.row:
             for i in range(self.row):
                 for j in range(M.col):
@@ -279,10 +275,9 @@ Returns a determinant in of Matrix A
                     if i+1>=r: de[i+1] = de[i+1] * d[j][i-c-j]
             return sum(de[:r])-sum(de[r:])
         else:
-            d = [i for i in M]
+            d = M[:]
             r = len(d)
             if r==2: return d[0][0]*d[1][1]-d[0][1]*d[1][0]
-            r = len(d)
             c = r+r-1
             de = [1 for i in range(r+r)]
             for i in range(r): d[i] = d[i]+d[i][:-1]
@@ -292,25 +287,21 @@ Returns a determinant in of Matrix A
                     if i+1>=r: de[i+1] = de[i+1] * d[j][i-c-j]
             return sum(de[:r])-sum(de[r:])
         
-    def cramer(self,arr):
+    def cramer(self,a):
         '''
 Solving cramer problem with Matrix A
 >>> A = Matrix("C 1x+2y+-1z=5 3x+-1y+3z=7 2x+3y+1z=11")
 >>> A.pMatrix()
         '''
         l = len(arr)
-        arr = arr[:]
+        arr = a[:]
         if l<2: return None
         else:
             dr = []
-            for i in arr[1:]:
-                dc = []
-                e = i.split("=")[0]
-                for j in e.split("+"):
-                    dc.append(j[-1])
-                dc.append('k')
-                dr.append(dc)
-                break
+            dc = []
+            e = arr[2].split("=")[0]
+            for j in e.split("+"): dc.append(j[-1])
+            dr.append(dc+['k'])
             for i in arr[1:]:
                 e,d= i.split("=")
                 dc = []
@@ -322,5 +313,4 @@ Solving cramer problem with Matrix A
             self.MArr = []
             for i in range(l-1):
                 self.MArr.append([dr[0][i],self.determinant(self.confector(dr[:], 0,i))/k])
-
 
